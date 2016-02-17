@@ -1,0 +1,24 @@
+---
+# defaults file for ansible-iscsitarget
+iscsitarget_debian_packages:
+  - iscsitarget
+  - iscsitarget-dkms
+iscsitarget_device_dir: '/storage'
+iscsitarget_enable: true  #defines if iscsitarget service is enabled
+iscsitarget_file_devices:
+  - name: lun0.img
+    lun: 0
+    bs: 1024k
+    count: 5000
+    allow:
+      - ALL
+  - name: lun1.img
+    lun: 1
+    bs: 1024k
+    count: 1000
+    allow:
+      - 10.0.2.0/24
+      - 192.168.202.0/24
+iscsitarget_iqn: iqn.2001-04.org.example  #define your FQDN in reverse...(local.vagrant)
+iscsitarget_max_sleep: 3
+iscsitarget_options: ''

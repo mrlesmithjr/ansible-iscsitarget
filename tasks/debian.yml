@@ -1,0 +1,52 @@
+---
+- name: debian | installing packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items: iscsitarget_debian_packages
+
+- name: debian | configuring iscsitarget service
+  template:
+    src: "etc/default/iscsitarget.j2"
+    dest: "/etc/default/iscsitarget"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart iscsitarget
+
+- name: debian | ensuring iscsitarget_device_dir exists
+  file:
+    path: "{{ iscsitarget_device_dir }}"
+    state: directory
+
+- name: debian | checking for existing file based iscsi devices
+  command: "ls {{ iscsitarget_device_dir }}/"
+  register: iscsi_file_devices
+  changed_when: false
+
+- name: debian | creating file based iscsi devices
+  shell: 'dd if=/dev/zero of={{ iscsitarget_device_dir }}/{{ item.name }} bs={{ item.bs }} count={{ item.count }}'
+  with_items: iscsitarget_file_devices
+  when: >
+        item.name not in iscsi_file_devices.stdout_lines
+
+- name: debian | configuring iscsi devices
+  template:
+    src: "etc/iet/ietd.conf.j2"
+    dest: "/etc/iet/ietd.conf"
+    owner: root
+    group: root
+    mode: 0600
+  notify:
+    - restart iscsitarget
+
+- name: debian | configuring iscsi device access
+  template:
+    src: "etc/iet/initiators.allow.j2"
+    dest: "/etc/iet/initiators.allow"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart iscsitarget
