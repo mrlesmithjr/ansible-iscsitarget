@@ -15,6 +15,26 @@
   notify:
     - restart iscsitarget
 
+- name: debian | formatting dedicated hard drive for iscsi lun creation
+  filesystem:
+    fstype: "ext4"
+    dev: "{{ iscsitarget_dedicated_hd }}"
+  when: >
+        (iscsitarget_use_dedicated_hd is defined and
+        iscsitarget_use_dedicated_hd) and
+        iscsitarget_dedicated_hd is defined
+
+- name: debian | mounting dedicated hard drive for iscsi lun creation
+  mount:
+    name: "{{ iscsitarget_device_dir }}"
+    src: "{{ iscsitarget_dedicated_hd }}"
+    fstype: "ext4"
+    state: mounted
+  when: >
+        (iscsitarget_use_dedicated_hd is defined and
+        iscsitarget_use_dedicated_hd) and
+        iscsitarget_dedicated_hd is defined
+
 - name: debian | ensuring iscsitarget_device_dir exists
   file:
     path: "{{ iscsitarget_device_dir }}"
