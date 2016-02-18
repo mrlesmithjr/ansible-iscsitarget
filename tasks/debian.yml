@@ -27,9 +27,17 @@
 
 - name: debian | creating file based iscsi devices
   shell: 'dd if=/dev/zero of={{ iscsitarget_device_dir }}/{{ item.name }} bs={{ item.bs }} count={{ item.count }}'
+  args:
+    creates: "{{ iscsitarget_device_dir }}/{{ item.name }}"
   with_items: iscsitarget_file_devices
-  when: >
-        item.name not in iscsi_file_devices.stdout_lines
+  when: item.enabled
+
+- name: debian | deleting file based iscsi devices
+  file:
+    path: "{{ iscsitarget_device_dir }}/{{ item.name }}"
+    state: absent
+  with_items: iscsitarget_file_devices
+  when: not item.enabled
 
 - name: debian | configuring iscsi devices
   template:
