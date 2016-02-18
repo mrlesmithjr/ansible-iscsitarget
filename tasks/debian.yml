@@ -20,11 +20,6 @@
     path: "{{ iscsitarget_device_dir }}"
     state: directory
 
-- name: debian | checking for existing file based iscsi devices
-  command: "ls {{ iscsitarget_device_dir }}/"
-  register: iscsi_file_devices
-  changed_when: false
-
 - name: debian | creating file based iscsi devices
   shell: 'dd if=/dev/zero of={{ iscsitarget_device_dir }}/{{ item.name }} bs={{ item.bs }} count={{ item.count }}'
   args:
