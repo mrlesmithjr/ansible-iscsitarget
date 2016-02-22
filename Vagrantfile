@@ -8,7 +8,7 @@
 disk = './secondDisk.vdi'
 Vagrant.configure(2) do |config|
   config.vm.define "iscsitarget" do |iscsitarget|
-    iscsitarget.vm.box = "ubuntu/trusty64"
+    iscsitarget.vm.box = "mrlesmithjr/trusty64"
     iscsitarget.vm.hostname = "iscsitarget"
 
     iscsitarget.vm.network :private_network, ip: "192.168.202.201"
